@@ -423,6 +423,12 @@ class Function
 public:
    T *call;
 
+   #ifdef HXCPP_GC_GENERATIONAL
+   // Haxe 4.3.7 treats cpp.Function as a managed object when emitting write
+   // barriers. Expose a null GC pointer so those barriers are no-ops.
+   static constexpr hx::Object *mPtr = 0;
+   #endif
+
    inline Function( ) { }
    inline Function( const Function &inRHS ) : call(inRHS.call) {  }
    inline Function( const Dynamic &inRHS) { call = inRHS==null()?0: (T*)inRHS->__GetHandle(); }
