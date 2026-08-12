@@ -9,6 +9,7 @@ Defines affecting how the code is generated.  These need to be in the command li
 |-------------------------|--------------------|
 | *HXCPP_DEBUGGER*        | Add extra macros required by debugger.  Usually added automatically be debugger haxelib |
 | *HXCPP_GC_GENERATIONAL* | Enable experimental generational garbage collector |
+| *HXCPP_FUTURE_GC*       | Mostly-concurrent major collections (requires HXCPP_GC_GENERATIONAL). See docs/FutureGC.md |
 | *annotate_source*       | Add additional annotations to source code - useful for developing hxcpp |
 | *dll_export*            | Export hxcpp runtime symbols |
 | *file_extension*        | Set the extension (without the dot) of generated files.  eg "-D file_extension=mm" for objc++ code  |

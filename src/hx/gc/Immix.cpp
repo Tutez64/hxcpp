@@ -5076,6 +5076,36 @@ public:
    double tMarkLocal;
    double tMarkLocalEnd;
    double tMarked;
+
+   // Weak-key hashes are ephemerons: a value is reachable only when both
+   // the hash and its key are reachable. Values marked here may in turn
+   // make keys in other weak hashes reachable, so iterate to a fixed point.
+   void MarkWeakHashEphemerons()
+   {
+      bool markedWeakValue;
+      do
+      {
+         markedWeakValue = false;
+         mMarker.init();
+         for(int i=0;i<hx::sWeakHashList.size();i++)
+         {
+            hx::HashRoot *hash = hx::sWeakHashList[i];
+            if (hx::IsWeakRefValid(hash))
+               markedWeakValue = hash->markWeakValues(&mMarker) || markedWeakValue;
+         }
+         if (markedWeakValue)
+         {
+            #ifdef HX_MULTI_THREAD_MARKING
+            mMarker.releaseJobs();
+            StartThreadJobs(tpjMark, MAX_GC_THREADS, true);
+            #else
+            mMarker.processMarkStack();
+            #endif
+         }
+      }
+      while(markedWeakValue);
+   }
+
    void MarkAll(bool inGenerational)
    {
       if (!inGenerational)
@@ -5197,31 +5227,7 @@ public:
 
       hx::FindZombies(mMarker);
 
-      // Weak-key hashes are ephemerons: a value is reachable only when both
-      // the hash and its key are reachable. Values marked here may in turn
-      // make keys in other weak hashes reachable, so iterate to a fixed point.
-      bool markedWeakValue;
-      do
-      {
-         markedWeakValue = false;
-         mMarker.init();
-         for(int i=0;i<hx::sWeakHashList.size();i++)
-         {
-            hx::HashRoot *hash = hx::sWeakHashList[i];
-            if (hx::IsWeakRefValid(hash))
-               markedWeakValue = hash->markWeakValues(&mMarker) || markedWeakValue;
-         }
-         if (markedWeakValue)
-         {
-            #ifdef HX_MULTI_THREAD_MARKING
-            mMarker.releaseJobs();
-            StartThreadJobs(tpjMark, MAX_GC_THREADS, true);
-            #else
-            mMarker.processMarkStack();
-            #endif
-         }
-      }
-      while(markedWeakValue);
+      MarkWeakHashEphemerons();
 
       hx::RunFinalizers();
 
@@ -6223,6 +6229,7 @@ public:
 
       double tFinal0 = __hxcpp_time_stamp();
       hx::FindZombies(mMarker);
+      MarkWeakHashEphemerons();
       hx::RunFinalizers();
 
       // Concurrent phase is over - barriers off, allocation back to nursery

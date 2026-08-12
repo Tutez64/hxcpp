@@ -1,5 +1,9 @@
 # HXCPP_FUTURE_GC — mostly-concurrent major collections
 
+Ported onto the DRH hxcpp tip (generational Haxe 4.3.7 shim, WeakMap
+ephemerons, Immix big-block working-memory fix) from
+[mikaib/hxcpp@future-gc-llm](https://github.com/mikaib/hxcpp/tree/future-gc-llm).
+
 `-D HXCPP_FUTURE_GC` is an add-on to the generational collector
 (`-D HXCPP_GC_GENERATIONAL` is required) that replaces stop-the-world *major*
 collections with a mostly-concurrent mark cycle. It targets latency-sensitive
@@ -93,6 +97,9 @@ this mostly trades memory for throughput.
   (explicit/fallback) full collects, never concurrently.
 * Weak refs, weak hashes, finalizers and zombies are processed in the remark
   pause with marking complete — same semantics as a classic full collect.
+  Weak-key hashes are treated as ephemerons (values are marked only when
+  both the hash and the key are reachable), including during concurrent
+  majors.
 * `Gc.memInfo64()` extensions: `100` = completed cycles, `101` = last remark
   pause (ms), `102` = max remark pause (ms), `103` = last full cycle length
   (ms), `104` = cycle currently active, `105` = last publish pause (ms),
