@@ -32,12 +32,6 @@ typedef int64_t __int64;
 #include <clocale>
 #include <mutex>
 
-
-#ifdef HX_ANDROID
-#define rand() lrand48()
-#define srand(x) srand48(x)
-#endif
-
 #ifdef HX_WINRT
 #define PRINTF WINRT_PRINTF
 #elif defined(TIZEN)
@@ -907,7 +901,7 @@ int  __hxcpp_field_to_id( const char *inFieldName )
       sgFieldToStringAlloc *= 2;
       String *newData = (String *)malloc(sgFieldToStringAlloc*sizeof(String));
       if (oldAlloc)
-         memcpy(newData, oldData, oldAlloc*sizeof(String));
+         memcpy((void *)newData, oldData, oldAlloc*sizeof(String));
       // Let oldData dangle to keep it thread safe, rather than require mutex on id read.
       sgFieldToString = newData;
    }
