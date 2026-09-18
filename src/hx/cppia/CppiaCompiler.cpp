@@ -893,7 +893,7 @@ public:
                {
                   if (inSrc.uses(SLJIT_R1))
                   {
-                     move(sJitArg0, inSrc);
+                     move(sJitArg0.as(jtInt), inSrc.as(jtInt));
                      add( sJitTemp1, inTarget.getReg(), inTarget.offset );
                      callNative( (void *)intToStr, sJitArg0.as(jtInt), sJitTemp1.as(jtPointer));
                   }
@@ -912,7 +912,7 @@ public:
             case etObject:
                if (inSrc.uses(SLJIT_R1))
                {
-                  move(sJitArg0, inSrc);
+                  move(sJitArg0.as(jtPointer), inSrc.as(jtPointer));
                   add( sJitTemp1, inTarget.getReg(), inTarget.offset );
                   callNative( (void *)objToStr, sJitArg0.as(jtPointer), sJitTemp1.as(jtPointer) );
                }
@@ -939,7 +939,7 @@ public:
             case etObject:
                if (inSrc==sJitTemp1)
                {
-                  move(sJitArg0, inSrc);
+                  move(sJitArg0.as(jtPointer), inSrc.as(jtPointer));
                   makeAddress(sJitTemp1,inTarget);
                   callNative( (void *)objToFloat, sJitArg0.as(jtPointer), sJitTemp1.as(jtPointer));
                }
