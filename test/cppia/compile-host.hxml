@@ -2,6 +2,7 @@
 HostExtendedRoot
 OptionalToString
 -D scriptable
+-D HXCPP_GC_GENERATIONAL
 -D dll_export=host_classes.info
 -L utest
 --dce no
