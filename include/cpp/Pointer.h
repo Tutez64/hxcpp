@@ -427,8 +427,8 @@ public:
    T *call;
 
    #ifdef HXCPP_GC_GENERATIONAL
-   // Haxe 4.3.7 treats cpp.Function as a managed object when emitting write
-   // barriers. Expose a null GC pointer so those barriers are no-ops.
+   // Haxe versions without HaxeFoundation/haxe#13002 write barrier cpp.Function
+   // fields as objects. A null mPtr turns those barriers into no-ops.
    static constexpr hx::Object *mPtr = 0;
    #endif
 
